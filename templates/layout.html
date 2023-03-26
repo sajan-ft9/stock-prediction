@@ -11,99 +11,124 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N"
         crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
 
-        <style>
-            ::-webkit-scrollbar {
-                width: 10px;
-            }
-    
-            /* Track */
-            ::-webkit-scrollbar-track {
-                background: #f1f1f1;
-            }
-    
-            /* Handle */
-            ::-webkit-scrollbar-thumb {
-                background: #888;
-            }
-    
-            /* Handle on hover */
-            ::-webkit-scrollbar-thumb:hover {
-                background: #555;
-            }
-    
-            body {
-                background-color: rgb(51,59,87);
-                
-                font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-                font-size: 24px;
-                line-height: 1.5;
-                color: white;
-                margin: 0;
-                padding: 0;
-            }
-    
-            .col {
-                border-radius: 10px;
-                box-shadow: 0px 0px 10px rgb(59, 56, 56, .5);
-    
-            }
-            .col:hover{
-                scale: 1.03;
-                z-index: 1;
-            }
-    
-            .col:hover {
-                box-shadow: 0px 0px 10px rgb(90, 86, 86);
-            }
-    
-            img {
-                border-radius: 10px;
-                box-shadow: 0px 0px 10px rgb(90, 86, 86);
-            }
-    
-            .card-body {
-                background-color: #222;
-            }
-    
-            a {
-                text-decoration: none;
-                color: white;
-                padding: 2px 20px 2px 20px;
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
 
-            }
-    
-            li{
-                display: inline-block;
-                background-color: rgba(56, 55, 55, 0.5);
-                border-radius: 10px 20px;
-            }
-            li:hover{
-                background-color: #4b4848;
-                border-radius: 10px 5px;
-                box-shadow: 1px 2px 2px 2px #f7f6f6;
-    
-            }
-            nav{
-                background:linear-gradient(rgb(74,103,134),rgb(74,103,134,.7));
-                padding: 10px 20px 2px 20px;
-            }
-        </style>
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        body {
+            background-color: #009B77;
+
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-size: 24px;
+            line-height: 1.5;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .card-body {
+            background-color: #222;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+            padding: 2px 20px 2px 20px;
+
+        }
+
+        .card {          
+            box-sizing: border-box;
+            box-shadow: 0 4px 10px rgba(109, 209, 248, 0.16), 0 4px 10px rgba(20, 198, 252, 0.23);
+            transition: all .5s ease-in-out;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, .5);
+            z-index: 1;
+        }
+
+        li{
+            display: inline-block;
+            background-color: rgba(56, 55, 55, 0.5);
+            border-radius: 10px 20px;
+            margin-top: 2px;
+        }
+
+        li:hover {
+            transition: all .5s ease-in-out;
+            background-color: #4b4848;
+            border-radius: 10px 5px;
+            box-shadow: 1px 2px 2px 2px #f7f6f6;
+        }
+
+        nav {
+            background-color: #009b77cc;
+            padding: 10px 20px 0 40px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.16), 0 4px 10px rgba(0,0,0,0.23);
+        }
+        .c-picker{
+            position: absolute;
+            right: 20%;
+            top: 20%;
+            padding: 4px, 2px;
+            color: white;
+        }
+        .c-picker:hover{
+            transition: all .5s ease-in-out;
+            scale: 1.1;
+        }
+    </style>
 </head>
 
 <body>
-    <nav class="navbar sticky-top">
+    <nav id="navbar" class="navbar sticky-top">
         <ul type="None">
-         <li><a href="/">Home</a></li>
-         <li><a href="/news">News</a></li>
-         <li><a href="/">About</a></li>
-         <li><a href="/">Login</a></li>
+            <li><a href="/">Home</a></li>
+            <li><a href="/news">News</a></li>
+            <li><a href="/">About</a></li>
+            <li><a href="/">Login</a></li>
+            <i class="bi bi-palette-fill c-picker" onclick="changebg()"></i>
+    </nav>
 
-        </ul> 
-     </nav>
+    {% block content %}
 
-     {% block content %}
+    {% endblock %}
+</body>
+<script onload="">
+    if(sessionStorage.getItem('color')){
+        default_color = sessionStorage.getItem('color')
+        nav = document.getElementById('navbar');
+        nav.style.backgroundColor = default_color+"cc";
+        document.body.style.backgroundColor = default_color;
+    }
+    function changebg()
+    {
+        color = ["#009B77","#9B2335", "#5B5EA6",  "#C3447A", "#955251", "#242526"];
+        const random = Math.floor(Math.random() * color.length);
+        nav = document.getElementById('navbar');
+        nav.style.backgroundColor = color[random]+"cc";
+        document.body.style.backgroundColor = color[random];
+        sessionStorage.setItem('color', color[random])
 
-     {% endblock %}
-    </body>
-    </html>
+    }
+</script>
+</html>

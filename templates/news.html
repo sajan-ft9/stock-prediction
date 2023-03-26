@@ -1,6 +1,11 @@
 {% extends 'layout.html' %}
 
 {% block content %}
+<style>
+    .card-title > a:hover {
+        color: aqua;
+    }
+</style>
 <div class="container">
     <div class="text-center pt-2">
         <h2>Headlines</h2>
@@ -12,7 +17,7 @@
 
         <div class="col">
             <div class="card h-100 bg-dark">
-                <img src="{{ item.image }}" class="card-img-top mt-2" style="height: 350px;"
+                <img src="{{ item.image }}" class="card-img-top" style="height: 350px;"
                     alt="Hollywood Sign on The Hill" />
                 <div class="card-body">
                     <h5 class="card-title"><a href="single_news/{{ item.link }}">{{ item.title | safe }}</a></h5>
