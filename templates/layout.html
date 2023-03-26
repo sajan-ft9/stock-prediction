@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N"
+        crossorigin="anonymous"></script>
+
+        <style>
+            ::-webkit-scrollbar {
+                width: 10px;
+            }
+    
+            /* Track */
+            ::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+    
+            /* Handle */
+            ::-webkit-scrollbar-thumb {
+                background: #888;
+            }
+    
+            /* Handle on hover */
+            ::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+    
+            body {
+                background-color: rgb(51,59,87);
+                
+                font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+                font-size: 24px;
+                line-height: 1.5;
+                color: white;
+                margin: 0;
+                padding: 0;
+            }
+    
+            .col {
+                border-radius: 10px;
+                box-shadow: 0px 0px 10px rgb(59, 56, 56, .5);
+    
+            }
+            .col:hover{
+                scale: 1.03;
+                z-index: 1;
+            }
+    
+            .col:hover {
+                box-shadow: 0px 0px 10px rgb(90, 86, 86);
+            }
+    
+            img {
+                border-radius: 10px;
+                box-shadow: 0px 0px 10px rgb(90, 86, 86);
+            }
+    
+            .card-body {
+                background-color: #222;
+            }
+    
+            a {
+                text-decoration: none;
+                color: white;
+                padding: 2px 20px 2px 20px;
+
+            }
+    
+            li{
+                display: inline-block;
+                background-color: rgba(56, 55, 55, 0.5);
+                border-radius: 10px 20px;
+            }
+            li:hover{
+                background-color: #4b4848;
+                border-radius: 10px 5px;
+                box-shadow: 1px 2px 2px 2px #f7f6f6;
+    
+            }
+            nav{
+                background:linear-gradient(rgb(74,103,134),rgb(74,103,134,.7));
+                padding: 10px 20px 2px 20px;
+            }
+        </style>
+</head>
+
+<body>
+    <nav class="navbar sticky-top">
+        <ul type="None">
+         <li><a href="/">Home</a></li>
+         <li><a href="/news">News</a></li>
+         <li><a href="/">About</a></li>
+         <li><a href="/">Login</a></li>
+
+        </ul> 
+     </nav>
+
+     {% block content %}
+
+     {% endblock %}
+    </body>
+    </html>
