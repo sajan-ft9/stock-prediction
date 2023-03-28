@@ -3,11 +3,12 @@
 {% block content %}
 <div class="container">
 
-    <div class="text-center pt-2">
-        <h2>Single News</h2>
+    <div class="text-center pt-2 mt-4">
+        <h2>{{ title.title | safe }}</h2>
     </div>
     <div>
-        <p>{{ news }}</p>
+        <img src="{{ title.image }}" width="100%" >
+        <p>{{ news.0 | safe }}</p>
     </div>
 </div>
 

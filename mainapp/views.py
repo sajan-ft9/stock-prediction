@@ -13,11 +13,7 @@ def get_driver():
 
 # Create your views here.
 def index(request):
-    title = News.objects.values_list('title')
-    data = {
-        'title': title
-    }
-    return render(request,'index.html', data)
+    return render(request,'index.html')
 
 def news(request):
 
@@ -207,8 +203,12 @@ def single_news(request, id):
         print(i.text)
         news_data.append(i.text.replace("\n", "<br>"))
 
+    
+    db_data = News.objects.get(id=id)
+
     data = {
-        'news': news_data 
+        'news': news_data,
+        'title': db_data 
     }
     driver.quit()
     return render(request, 'single_news.html', data)
@@ -217,6 +217,9 @@ def single_news(request, id):
 def about(request):
     import time
     ts = time.time()
+    db_data = News.objects.get(id=195)
+
+    print(db_data.image)
 
     # expiry_time = News.objects.values('id','expiry').latest('id')
     # link_db = News.objects.values_list('link')
