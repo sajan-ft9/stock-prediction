@@ -85,7 +85,7 @@ def news(request):
             driver.quit()
 
             if(len(news_data) == 16):
-                expiry_time = ts + 6000
+                expiry_time = ts + 9000
                 News.objects.all().delete()
                 for i in news_data:
                     
@@ -171,7 +171,7 @@ def news(request):
             driver.quit()
 
             if(len(news_data) == 16):
-                expiry_time = ts + 6000
+                expiry_time = ts + 9000
                 News.objects.all().delete()
                 for i in news_data:
                     add_news = News(title=i['title'], image=i['image'], link = i['link'],expiry=expiry_time)
