@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import News
+from django.http import JsonResponse
 
 def get_driver():
     from selenium.webdriver import Chrome
@@ -12,6 +13,7 @@ def get_driver():
     return driver
 
 # Create your views here.
+
 def index(request):
     return render(request,'index.html')
 
@@ -83,7 +85,7 @@ def news(request):
             driver.quit()
 
             if(len(news_data) == 16):
-                expiry_time = ts + 600
+                expiry_time = ts + 6000
                 News.objects.all().delete()
                 for i in news_data:
                     
@@ -169,7 +171,7 @@ def news(request):
             driver.quit()
 
             if(len(news_data) == 16):
-                expiry_time = ts + 600
+                expiry_time = ts + 6000
                 News.objects.all().delete()
                 for i in news_data:
                     add_news = News(title=i['title'], image=i['image'], link = i['link'],expiry=expiry_time)
@@ -185,46 +187,3 @@ def news(request):
                     'news': None
                 }
                 return render(request, 'news.html', data)
-
-
-def single_news(request, id):
-    from selenium.webdriver.common.by import By
-
-    driver = get_driver()
-    db_data = News.objects.values('link').get(id=id)
-    link = db_data['link']
-    driver.get(link)
-
-    content = driver.find_elements(By.CSS_SELECTOR, '.media-content')
-
-    news_data = []
-
-    for i in content:
-        print(i.text)
-        news_data.append(i.text.replace("\n", "<br>"))
-
-    
-    db_data = News.objects.get(id=id)
-
-    data = {
-        'news': news_data,
-        'title': db_data 
-    }
-    driver.quit()
-    return render(request, 'single_news.html', data)
-
-
-def about(request):
-    import time
-    ts = time.time()
-    db_data = News.objects.get(id=195)
-
-    print(db_data.image)
-
-    # expiry_time = News.objects.values('id','expiry').latest('id')
-    # link_db = News.objects.values_list('link')
-    # if News.objects.filter(link="")
-        # print("NIce")
-    # print(link_db)
-    
-    return render(request, 'about.html')
