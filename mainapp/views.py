@@ -1,6 +1,48 @@
 from django.shortcuts import render
 from .models import News
-from django.http import JsonResponse
+import csv
+import os
+from django.conf import settings
+import matplotlib.pyplot as plt
+
+
+
+
+import plotly.graph_objs as go
+from plotly.offline import plot
+from .forms import CSVUploadForm
+
+def visualize_csv_form(request):
+    if request.method == 'POST':
+        form = CSVUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = request.FILES['csv_file']
+            reader = csv.reader(csv_file.read().decode('utf-8').splitlines())
+            next(reader)  # Skip the header row
+            dates = []
+            close_prices = []
+            for row in reader:
+                dates.append(row[1])  # Assuming the date column is at index 1
+                close_prices.append(float(row[5]))  # Assuming the close price column is at index 5
+
+            chart_data = go.Scatter(x=dates, y=close_prices, mode='lines', name='Close Prices')
+            layout = go.Layout(title='Close Prices Over Time', xaxis=dict(title='Date'), yaxis=dict(title='Close Price'))
+            fig = go.Figure(data=[chart_data], layout=layout)
+            plot_div = plot(fig, output_type='div')
+
+            return render(request, 'form.html', {'form': form, 'plot_div': plot_div})
+    else:
+        form = CSVUploadForm()
+
+    return render(request, 'form.html', {'form': form})
+
+
+
+
+
+
+
+
 
 def get_driver():
     from selenium.webdriver import Chrome
@@ -16,6 +58,76 @@ def get_driver():
 
 def index(request):
     return render(request,'index.html')
+
+
+
+
+def visualize_csv(request):
+    import plotly.graph_objs as go
+    from plotly.offline import plot
+        
+    csv_file_path = os.path.join(settings.BASE_DIR,'assets','csv', 'file.csv')
+
+    with open(csv_file_path, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip the header row
+        dates = []
+        close_prices = []
+        for row in reader:
+            dates.append(row[1])  # Assuming the date column is at index 1
+            close_prices.append(float(row[5]))  # Assuming the close price column is at index 5
+
+    chart_data = go.Scatter(x=dates, y=close_prices, mode='lines', name='Close Prices')
+    layout = go.Layout(title='Close Prices Over Time', xaxis=dict(title='Date'), yaxis=dict(title='Close Price'))
+    fig = go.Figure(data=[chart_data], layout=layout)
+    plot_div = plot(fig, output_type='div')
+
+    return render(request, 'try.html', {'plot_div': plot_div})
+
+
+def visualize_prices(request):
+
+
+
+    data = []
+    labels = []
+
+    csv_file_path = os.path.join(settings.BASE_DIR,'assets','csv', 'file.csv')
+    
+    with open(csv_file_path, 'r') as file:
+        reader = csv.DictReader(file)
+        rows = list(reader)[:]  # Retrieve the last 50 rows
+
+        for row in rows:
+            labels.append(row['Date'])
+            data.append(float(row['Close']))
+
+    # Plot the data
+    plt.figure(figsize=(12, 6))  # Adjust the figsize to desired dimensions
+    plt.plot(labels, data)
+    plt.xlabel('Date')
+    plt.ylabel('Close Price')
+    plt.title('Close Price Visualization')
+    plt.xticks(rotation=45)
+
+    # Save the plot to a temporary file
+    plot_path = os.path.join(settings.BASE_DIR, 'assets', 'images', 'plot.png')
+    plt.savefig(plot_path)
+
+    return render(request, 'visualization.html', {'plot_path': plot_path})
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def news(request):
 
