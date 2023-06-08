@@ -62,63 +62,6 @@ def index(request):
 
 
 
-def visualize_csv(request):
-    import plotly.graph_objs as go
-    from plotly.offline import plot
-        
-    csv_file_path = os.path.join(settings.BASE_DIR,'assets','csv', 'file.csv')
-
-    with open(csv_file_path, 'r') as file:
-        reader = csv.reader(file)
-        next(reader)  # Skip the header row
-        dates = []
-        close_prices = []
-        for row in reader:
-            dates.append(row[1])  # Assuming the date column is at index 1
-            close_prices.append(float(row[5]))  # Assuming the close price column is at index 5
-
-    chart_data = go.Scatter(x=dates, y=close_prices, mode='lines', name='Close Prices')
-    layout = go.Layout(title='Close Prices Over Time', xaxis=dict(title='Date'), yaxis=dict(title='Close Price'))
-    fig = go.Figure(data=[chart_data], layout=layout)
-    plot_div = plot(fig, output_type='div')
-
-    return render(request, 'try.html', {'plot_div': plot_div})
-
-
-def visualize_prices(request):
-
-
-
-    data = []
-    labels = []
-
-    csv_file_path = os.path.join(settings.BASE_DIR,'assets','csv', 'file.csv')
-    
-    with open(csv_file_path, 'r') as file:
-        reader = csv.DictReader(file)
-        rows = list(reader)[:]  # Retrieve the last 50 rows
-
-        for row in rows:
-            labels.append(row['Date'])
-            data.append(float(row['Close']))
-
-    # Plot the data
-    plt.figure(figsize=(12, 6))  # Adjust the figsize to desired dimensions
-    plt.plot(labels, data)
-    plt.xlabel('Date')
-    plt.ylabel('Close Price')
-    plt.title('Close Price Visualization')
-    plt.xticks(rotation=45)
-
-    # Save the plot to a temporary file
-    plot_path = os.path.join(settings.BASE_DIR, 'assets', 'images', 'plot.png')
-    plt.savefig(plot_path)
-
-    return render(request, 'visualization.html', {'plot_path': plot_path})
-
-
-
-
 
 
 
@@ -136,7 +79,7 @@ def news(request):
     try:
         db_exp_time = News.objects.values('expiry').latest('id')
         if (ts < db_exp_time['expiry']):
-            db_data = News.objects.all().order_by('-id').values()
+            db_data = News.objects.all().order_by('id').values()
             send_news = {
                 'news':db_data
             }
@@ -205,7 +148,7 @@ def news(request):
                     add_news.save()
                 
 
-                db_data = News.objects.all().order_by('-id').values()
+                db_data = News.objects.all().order_by('id').values()
                 data = {
                     'news': db_data
                 }
@@ -222,7 +165,7 @@ def news(request):
         
 
         if (ts < db_exp_time['expiry']):
-            db_data = News.objects.all().order_by('-id').values()
+            db_data = News.objects.all().order_by('id').values()
             send_news = {
                 'news':db_data
             }
@@ -289,7 +232,7 @@ def news(request):
                     add_news = News(title=i['title'], image=i['image'], link = i['link'],expiry=expiry_time)
                     add_news.save()
                 
-                db_data = News.objects.all().order_by('-id').values()
+                db_data = News.objects.all().order_by('id').values()
                 data = {
                     'news': db_data
                 }
