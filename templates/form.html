@@ -1,0 +1,69 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<section class="breadcrumbs">
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>Visualization</h2>
+        </div>
+
+    </div>
+</section><!-- End Breadcrumbs Section -->
+
+<section class="inner-page">
+    <div class="container">
+        <div class="section-title" data-aos="fade-up">
+            <h2>VISUALIZATION</h2>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-secondary" type="submit">Visualize</button>
+        </form>
+
+        <div id="chart">
+            {% if plot_div %}
+            {{ plot_div|safe }}
+            {% endif %}
+        </div>
+
+        <div class="mt-4">
+            <h2>Statistical Data</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Statistical Measure</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Minimum</td>
+                        <td>{{ minimum }}</td>
+                    </tr>
+                    <tr>
+                        <td>Maximum</td>
+                        <td>{{ maximum }}</td>
+                    </tr>
+                    <tr>
+                        <td>Average</td>
+                        <td>{{ average }}</td>
+                    </tr>
+                    <tr>
+                        <td>Variance</td>
+                        <td>{{ variance }}</td>
+                    </tr>
+                    <tr>
+                        <td>Median</td>
+                        <td>{{ median }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

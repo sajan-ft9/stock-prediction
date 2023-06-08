@@ -4,7 +4,6 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('news', views.news),
-    path('about', views.about),
-    path('single_news/<int:id>', views.single_news),
-    path('login', views.login),
+    path('visualization/', views.visualize_csv_form),
+    # path('try/', views.visualize_csv, name='visualize_csv'),
 ]
