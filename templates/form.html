@@ -30,6 +30,40 @@
             {{ plot_div|safe }}
             {% endif %}
         </div>
+
+        <div class="mt-4">
+            <h2>Statistical Data</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Statistical Measure</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Minimum</td>
+                        <td>{{ minimum }}</td>
+                    </tr>
+                    <tr>
+                        <td>Maximum</td>
+                        <td>{{ maximum }}</td>
+                    </tr>
+                    <tr>
+                        <td>Average</td>
+                        <td>{{ average }}</td>
+                    </tr>
+                    <tr>
+                        <td>Variance</td>
+                        <td>{{ variance }}</td>
+                    </tr>
+                    <tr>
+                        <td>Median</td>
+                        <td>{{ median }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </section>
 {% endblock %}
