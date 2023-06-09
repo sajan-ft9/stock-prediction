@@ -85,7 +85,7 @@ def lstm_model(company):
 
     last_date = df['Date'].iloc[-1]
     forecast_dates = pd.date_range(start=last_date + pd.DateOffset(days=1), periods=7, freq='D')
-    df_predictions = pd.DataFrame({'Predicted Close Price': predicted_close_prices.flatten(), 'Date': forecast_dates})
+    df_predictions = pd.DataFrame({'close_price': predicted_close_prices.flatten(), 'date': forecast_dates})
 
 
     print(df_predictions)
