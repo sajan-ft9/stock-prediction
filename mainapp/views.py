@@ -8,6 +8,65 @@ from plotly.offline import plot
 from .forms import CSVUploadForm
 
 
+
+def auto_download(request):
+    if request.method == 'POST':
+        company = request.POST.get('company')
+        from selenium.webdriver import Chrome
+        from selenium.webdriver.chrome.options import Options
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.support import expected_conditions as EC
+        from selenium.webdriver.support.ui import WebDriverWait
+        import time
+        from selenium.webdriver.common.keys import Keys
+
+
+        chrome_options = Options()
+        # chrome_options.add_experimental_option("prefs", {
+        #     "download.prompt_for_download": True,
+        #     "download.directory_upgrade": True,
+        #     "safebrowsing.enabled": True
+        # })
+
+        driver = Chrome(executable_path='D:\jupyter\stockforecast\chromedriver.exe', options=chrome_options)
+
+        driver.get('https://nepsealpha.com/nepse-data')
+
+
+
+        select_click = driver.find_element(By.CSS_SELECTOR, '#vue_app_content > div.page.page_margin_top > div > div > div > form > div > div > div:nth-child(4) > span > span.selection > span')
+        select_click.click()
+
+        select_input = driver.find_element(By.CSS_SELECTOR, 'body > span > span > span.select2-search.select2-search--dropdown > input')
+        select_input.send_keys(company)
+        select_input.send_keys(Keys.ENTER)
+
+        start_date = driver.find_element(By.CSS_SELECTOR, '#vue_app_content > div.page.page_margin_top > div > div > div > form > div > div > div:nth-child(2) > input')
+        start_date.send_keys("07/01/2013")
+
+        filter_button = driver.find_element(By.CSS_SELECTOR, '#vue_app_content > div.page.page_margin_top > div > div > div > form > div > div > div:nth-child(5) > button')
+        filter_button.click()
+        time.sleep(3)
+
+        csv_button = driver.find_element(By.CSS_SELECTOR, '#result-table_wrapper > div.dt-buttons > button.dt-button.buttons-csv.buttons-html5.btn.btn-outline-secondary.btn-sm')
+        csv_button.click()
+
+        time.sleep(5)
+        driver.quit()
+        import os
+        import subprocess
+
+        # Get the user's download folder path
+        download_folder = os.path.expanduser("~\\Downloads")
+
+        # Open the download folder in Windows Explorer
+        subprocess.Popen(f'explorer "{download_folder}"')
+
+        return render(request,'data.html')
+
+
+
+
 def pred_show(request):
     return render(request,'predict.html')
 
@@ -56,8 +115,6 @@ def predict(request):
 
         # Train the LSTM model
         model.fit(X_train_lstm, y_train, epochs=50, batch_size=32, verbose=0)
-
-        model.save('lstm_model.h5')
 
         # Ask the user for a date to predict the close price
         user_date = input("Enter the date (in the format YYYY-MM-DD) for which you want to predict the close price: ")
@@ -109,7 +166,7 @@ def predict(request):
             'mse': mse_lstm,
             'r2': r2_lstm
         }
-    return render(request, 'done.html', data)
+        return render(request, 'done.html', data)
 
 
 

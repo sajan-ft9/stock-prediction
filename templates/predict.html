@@ -21,7 +21,7 @@
 <form action="/predict" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="file" name="csv_file">
-    <button type="submit">Upload CSV</button>
+    <button class="btn btn-primary rounded-lg px-4" type="submit">Upload CSV</button>
   </form>
 </div>
 </section>
