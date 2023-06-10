@@ -26,11 +26,10 @@
 
             var formData = new FormData();
             formData.append('csv_file', $('#csv-file')[0].files[0]);
+            formData.append('model', $('[name="model"]').val());
 
-            // Show loading message
             $('#result').text('Model is training. Please wait it takes about 2 minutes or less');
 
-            // Send AJAX POST request to the '/predict2' endpoint
             $.ajax({
                 url: '/predict',
                 type: 'POST',
@@ -38,23 +37,20 @@
                 processData: false,
                 contentType: false,
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader('X-CSRFToken', csrftoken);  // Add CSRF token to request headers
+                    xhr.setRequestHeader('X-CSRFToken', csrftoken);  
                 },
                 success: function (response) {
-                    // Update result with the received response
                     $('#result-table tbody').empty();
                     $('#result').empty();
 
-                    // Iterate over the data and create table rows
                     $.each(response.data.date, function (index, value) {
                         var newRow = $('<tr>');
                         newRow.append($('<td>').text(value));
-                        newRow.append($('<td>').text('Rs.'+ response.data.close_price[index]));
+                        newRow.append($('<td>').text('Rs.' + response.data.close_price[index]));
                         $('#result-table tbody').append(newRow);
                     });
                 },
                 error: function (xhr, status, error) {
-                    // Handle error if necessary
                     console.log(error);
                 }
             });
@@ -71,7 +67,7 @@
         </div>
 
     </div>
-</section><!-- End Breadcrumbs Section -->
+</section>
 <section class="inner-page">
     <div class="container">
         <div class="section-title" data-aos="fade-up">
@@ -79,9 +75,23 @@
         </div>
         <form id="predict-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-           
-            <input type="file" id="csv-file" name="csv_file">
-            <input class="btn btn-primary px-4" type="submit" value="Predict">
+            <div class="form-group mb-3">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 mb-3">
+                        <input class="form-control" type="file" id="csv-file" name="csv_file" required>
+                    </div>
+                    <div class="col-lg-4 col-md-4 mb-3">
+                        <select class="form-control" name="model" id="model_select" required>
+                            <option value="" disabled selected>Select a Model</option>
+                            <option value="LSTM">LSTM</option>
+                            <option value="BLSTM">BLSTM</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4 col-md-4 mb-3">
+                        <input class="btn btn-primary form-control" type="submit" value="Predict">
+                    </div>
+                </div>
+            </div>
         </form>
 
         <p class="text-danger" id="result"></p>

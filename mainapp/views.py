@@ -71,28 +71,26 @@ def auto_download(request):
 
 
 
-# def pred_show(request):
-#     return render(request,'predict.html')
-
-# def predict(request):
-#     if request.method == 'POST' and request.FILES['csv_file']:
-#         from .lstm import lstm_model
-#         csv_file = request.FILES['csv_file']
-#         data = lstm_model(csv_file)
-#         return render(request, 'done.html', {'data':data})
-#     return render(request, 'predict.html')
-
 
 def predict(request):
     if request.method == 'POST' and request.FILES['csv_file']:
-        from .lstm import lstm_model
-        csv_file = request.FILES['csv_file']
-        result = lstm_model(csv_file)
-        result_dict = result.to_dict()
+        model = request.POST.get('model')
+        print(model)
+        if(model == 'LSTM'):
+            from .lstm import lstm_model
+            csv_file = request.FILES['csv_file']
+            result = lstm_model(csv_file)
+            result_dict = result.to_dict()
+        
+        elif(model == 'BLSTM'):
+            from .bilstm import bilstm_model
+            csv_file = request.FILES['csv_file']
+            result = bilstm_model(csv_file)
+            result_dict = result.to_dict()
 
         return JsonResponse({'data': result_dict})
     
-    return render(request, 'predict2.html')
+    return render(request, 'predict.html')
     
 
 
