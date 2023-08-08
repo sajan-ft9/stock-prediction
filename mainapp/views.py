@@ -87,6 +87,13 @@ def predict(request):
             csv_file = request.FILES['csv_file']
             result = bilstm_model(csv_file)
             result_dict = result.to_dict()
+        
+        elif(model == 'SVM'):
+            from .svm import svm_model
+            csv_file = request.FILES['csv_file']
+            result = svm_model(csv_file)
+            result_dict = result.to_dict()
+
 
         return JsonResponse({'data': result_dict})
     

@@ -42,7 +42,10 @@
                 success: function (response) {
                     $('#result-table tbody').empty();
                     $('#result').empty();
-
+                    console.log(response.data)
+                    console.log(response.data.mse)
+                    console.log(response.data.rmse)
+                    console.log(response.data.r2)
                     $.each(response.data.date, function (index, value) {
                         var newRow = $('<tr>');
                         newRow.append($('<td>').text(value));
@@ -85,6 +88,7 @@
                             <option value="" disabled selected>Select a Model</option>
                             <option value="LSTM">LSTM</option>
                             <option value="BLSTM">BLSTM</option>
+                            <option value="SVM">SVM</option>
                         </select>
                     </div>
                     <div class="col-lg-4 col-md-4 mb-3">
