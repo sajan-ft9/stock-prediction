@@ -31,8 +31,12 @@ def auto_download(request):
         #     "download.directory_upgrade": True,
         #     "safebrowsing.enabled": True
         # })
+        from selenium import webdriver
 
-        driver = Chrome(executable_path='D:\jupyter\stockforecast\chromedriver.exe', options=chrome_options)
+        driver=webdriver.Chrome()
+
+
+        # driver = Chrome(executable_path='D:\jupyter\stockforecast\chromedriver.exe', options=chrome_options)
 
         driver.get('https://nepsealpha.com/nepse-data')
 
@@ -46,7 +50,7 @@ def auto_download(request):
         select_input.send_keys(Keys.ENTER)
 
         start_date = driver.find_element(By.CSS_SELECTOR, '#vue_app_content > div.page.page_margin_top > div > div > div > form > div > div > div:nth-child(2) > input')
-        start_date.send_keys("07/01/2013")
+        start_date.send_keys("10/10/2013")
 
         filter_button = driver.find_element(By.CSS_SELECTOR, '#vue_app_content > div.page.page_margin_top > div > div > div > form > div > div > div:nth-child(5) > button')
         filter_button.click()
@@ -160,8 +164,12 @@ def get_driver():
 
     chrome_options = Options()
     chrome_options.add_argument("--headless")
+    from selenium import webdriver
 
-    driver = Chrome(executable_path='D:\jupyter\stockforecast\chromedriver.exe', options=chrome_options)
+    driver=webdriver.Chrome()
+
+    # driver.get("https://www.facebook.com/") 
+    # driver = Chrome(executable_path='D:\jupyter\stockforecast\chromedriver.exe', options=chrome_options)
     return driver
 
 # Create your views here.
