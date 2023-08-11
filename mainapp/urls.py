@@ -7,6 +7,6 @@ urlpatterns = [
     path('visualization/', views.visualize_csv_form),
     path('data_download/', views.data_download),
     path('auto_download', views.auto_download),
-    path('predict', views.predict),
+    path('predict/', views.predict),
     
 ]
