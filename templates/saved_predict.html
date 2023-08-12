@@ -1,0 +1,119 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Get CSRF token from cookies
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+
+        $('#predict-form').submit(function (event) {
+            event.preventDefault();  // Prevent form submission
+
+            var formData = new FormData();
+            formData.append('company', $('[name="company"]').val());
+            formData.append('model', $('[name="model"]').val());
+
+            $('#result').text('Model is training. Please wait it takes about 2 minutes or less');
+
+            $.ajax({
+                url: '/saved_predict',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('X-CSRFToken', csrftoken);  
+                },
+                success: function (response) {
+                    $('#result-table tbody').empty();
+                    $('#result').empty();
+                    console.log(response.data)
+
+                    $.each(response.data.date, function (index, value) {
+                        var newRow = $('<tr>');
+                        newRow.append($('<td>').text(value));
+                        newRow.append($('<td>').text('Rs.' + response.data.close_price[index]));
+                        $('#result-table tbody').append(newRow);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<section class="breadcrumbs">
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>Prediction Result</h2>
+        </div>
+
+    </div>
+</section>
+<section class="inner-page">
+    <div class="container">
+        <div class="section-title" data-aos="fade-up">
+            <h2>Result</h2>
+        </div>
+
+
+        <form id="predict-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group mb-3">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 mb-3">
+                        <select name="company" id="" class="form-control" required>
+                            <option value="">Select company</option>
+                            <option value="0">AKPL</option>
+                            <option value="1">NTC</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4 col-md-4 mb-3">
+                        <select class="form-control" name="model" id="model_select" required>
+                            <option value="" disabled selected>Select a Model</option>
+                            <option value="LSTM">LSTM</option>
+                            <option value="BLSTM">BLSTM</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4 col-md-4 mb-3">
+                        <input class="btn btn-primary form-control" type="submit" value="Predict">
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <p class="text-danger" id="result"></p>
+
+        <table class="table table-striped" id="result-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Close Price</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</section>
+
+
+{% endblock %}

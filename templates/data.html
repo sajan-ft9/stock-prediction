@@ -15,6 +15,9 @@
 
 <section class="inner-page">
     <div class="container">
+        {% if error == 1 %}
+        <script>alert('Could not download data')</script>
+      {% endif %}
         <div class="section-title" data-aos="fade-up">
             <h2>Data</h2>
         </div>

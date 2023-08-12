@@ -26,45 +26,56 @@ def auto_download(request):
 
 
         chrome_options = Options()
-        # chrome_options.add_experimental_option("prefs", {
-        #     "download.prompt_for_download": True,
-        #     "download.directory_upgrade": True,
-        #     "safebrowsing.enabled": True
-        # })
+        chrome_options.add_experimental_option("prefs", {
+            "download.prompt_for_download": True,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": True
+        })
 
-        driver = Chrome(executable_path='D:\jupyter\stockforecast\chromedriver.exe', options=chrome_options)
+        driver = Chrome(options=chrome_options)
+        try:
 
-        driver.get('https://nepsealpha.com/nepse-data')
+            driver.get('https://nepsealpha.com/nepse-data')
+
+            time.sleep(30)
 
 
+            select_click = driver.find_element(By.CSS_SELECTOR, '#vue_app_content > div.page.page_margin_top > div > div > div > form > div > div > div:nth-child(4) > span > span.selection > span')
+            select_click.click()
 
-        select_click = driver.find_element(By.CSS_SELECTOR, '#vue_app_content > div.page.page_margin_top > div > div > div > form > div > div > div:nth-child(4) > span > span.selection > span')
-        select_click.click()
+            select_input = driver.find_element(By.CSS_SELECTOR, 'body > span > span > span.select2-search.select2-search--dropdown > input')
+            select_input.send_keys(company)
+            select_input.send_keys(Keys.ENTER)
 
-        select_input = driver.find_element(By.CSS_SELECTOR, 'body > span > span > span.select2-search.select2-search--dropdown > input')
-        select_input.send_keys(company)
-        select_input.send_keys(Keys.ENTER)
+            start_date = driver.find_element(By.CSS_SELECTOR, '#vue_app_content > div.page.page_margin_top > div > div > div > form > div > div > div:nth-child(2) > input')
+            start_date.send_keys("10/10/2013")
 
-        start_date = driver.find_element(By.CSS_SELECTOR, '#vue_app_content > div.page.page_margin_top > div > div > div > form > div > div > div:nth-child(2) > input')
-        start_date.send_keys("07/01/2013")
+            filter_button = driver.find_element(By.CSS_SELECTOR, '#vue_app_content > div.page.page_margin_top > div > div > div > form > div > div > div:nth-child(5) > button')
+            filter_button.click()
+            time.sleep(3)
 
-        filter_button = driver.find_element(By.CSS_SELECTOR, '#vue_app_content > div.page.page_margin_top > div > div > div > form > div > div > div:nth-child(5) > button')
-        filter_button.click()
-        time.sleep(3)
+            csv_button = driver.find_element(By.CSS_SELECTOR, '#result-table_wrapper > div.dt-buttons > button.dt-button.buttons-csv.buttons-html5.btn.btn-outline-secondary.btn-sm')
+            csv_button.click()
 
-        csv_button = driver.find_element(By.CSS_SELECTOR, '#result-table_wrapper > div.dt-buttons > button.dt-button.buttons-csv.buttons-html5.btn.btn-outline-secondary.btn-sm')
-        csv_button.click()
+            time.sleep(5)
+            driver.quit()
+            import os
+            import subprocess
 
-        time.sleep(5)
-        driver.quit()
-        import os
-        import subprocess
+            # Get the user's download folder path
+            download_folder = os.path.expanduser("~\\Downloads")
 
-        # Get the user's download folder path
-        download_folder = os.path.expanduser("~\\Downloads")
-
-        # Open the download folder in Windows Explorer
-        subprocess.Popen(f'explorer "{download_folder}"')
+            # Open the download folder in Windows Explorer
+            subprocess.Popen(f'explorer "{download_folder}"')
+            
+        except:
+             
+            data ={
+                'error': 1
+            }
+            
+            return render(request,'data.html', data)
+            
 
         return render(request,'data.html')
 
@@ -77,28 +88,142 @@ def predict(request):
         model = request.POST.get('model')
         print(model)
         if(model == 'LSTM'):
-            from .lstm import lstm_model
+            from .lstm2 import lstm_model
             csv_file = request.FILES['csv_file']
             result = lstm_model(csv_file)
-            result_dict = result.to_dict()
+            result_dict = {
+                'prediction' : result[0].to_dict(),
+                'train_rmse' : result[1],
+                'test_rmse' : result[2],
+                'train_r2' : result[3],
+                'test_r2' : result[4],
+            }
         
         elif(model == 'BLSTM'):
-            from .bilstm import bilstm_model
+            from .bilstm2 import bilstm_model
             csv_file = request.FILES['csv_file']
             result = bilstm_model(csv_file)
-            result_dict = result.to_dict()
+            result_dict = {
+                'prediction' : result[0].to_dict(),
+                'train_rmse' : result[1],
+                'test_rmse' : result[2],
+                'train_r2' : result[3],
+                'test_r2' : result[4],
+            }
         
         elif(model == 'SVM'):
             from .svm import svm_model
             csv_file = request.FILES['csv_file']
             result = svm_model(csv_file)
-            result_dict = result.to_dict()
+            result_dict = {
+                'prediction' : result[0].to_dict(),
+                'train_rmse' : result[1],
+                'test_rmse' : result[2],
+                'train_r2' : result[3],
+                'test_r2' : result[4],
+            }
 
 
         return JsonResponse({'data': result_dict})
     
     return render(request, 'predict.html')
     
+
+
+def lstm_saved(company):
+    import pandas as pd
+    import os
+    from sklearn.preprocessing import MinMaxScaler
+    from tensorflow.keras.models import load_model
+    import numpy as np
+        
+    if(company == 0):
+        model_path = os.path.join(os.path.dirname(__file__), 'akpllstm.h5')
+        df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'akpl.csv'))
+        
+    if(company == 1):
+        model_path = os.path.join(os.path.dirname(__file__), 'ntclstm.h5')
+        df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'ntc.csv'))
+    if(company == 2):
+        model_path = os.path.join(os.path.dirname(__file__), 'akplbilstm.h5')
+        df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'akpl.csv'))
+    if(company == 3):
+        model_path = os.path.join(os.path.dirname(__file__), 'ntcbilstm.h5')
+        df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'ntc.csv'))
+
+     # Convert the Date column to a datetime object
+    df['Date'] = pd.to_datetime(df['Date'])
+
+    # Sort the dataframe by date
+    df = df.sort_values('Date')
+
+    # Convert '--' to 0 in the 'Percent Change' column
+    df['Percent Change'] = df['Percent Change'].replace('--', 0)
+
+    # Convert columns to float
+    df['Open'] = df['Open'].astype(float)
+    df['High'] = df['High'].astype(float)
+    df['Low'] = df['Low'].astype(float)
+    df['Close'] = df['Close'].astype(float)
+    df['Percent Change'] = df['Percent Change'].astype(float)
+
+    # Extract the 'Close' column for prediction
+    data = df['Close'].values.reshape(-1, 1)
+
+
+
+    # Scale the data using Min-Max Scaler
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    scaled_data = scaler.fit_transform(data)
+
+
+    saved_model = load_model(model_path)
+
+    last_week_data = scaled_data[-7:, :]
+    last_week_data = np.reshape(last_week_data, (1, 7, 1))
+    predictions = saved_model.predict(last_week_data)
+    predictions = scaler.inverse_transform(predictions)
+    predicted_close_prices = predictions[0]
+
+    last_date = df['Date'].iloc[-1]
+    forecast_dates = pd.date_range(start=last_date + pd.DateOffset(days=1), periods=7, freq='D')
+    df_predictions = pd.DataFrame({'close_price': predicted_close_prices.flatten(), 'date': forecast_dates})
+    print(df_predictions)
+    return df_predictions
+    
+
+
+def saved_predict(request):
+    if request.method == 'POST':
+        
+        model = request.POST.get('model')
+        company = request.POST.get('company')
+        print(model)
+        print(company)
+
+        if(model == 'LSTM'):
+            if company == '0':
+                result = lstm_saved(0)
+                result_dict = result.to_dict()
+
+            elif company == '1':
+                result = lstm_saved(1)
+                result_dict = result.to_dict()
+        
+        elif(model == 'BLSTM'):
+            if company == '0':
+                result = lstm_saved(2)
+                result_dict = result.to_dict()
+            elif company == '1':
+                result = lstm_saved(3)
+                result_dict = result.to_dict()
+
+
+        return JsonResponse({'data':result_dict})
+    
+    return render(request, 'saved_predict.html')
+    
+
 
 
 def data_download(request):
@@ -161,7 +286,7 @@ def get_driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
 
-    driver = Chrome(executable_path='D:\jupyter\stockforecast\chromedriver.exe', options=chrome_options)
+    driver = Chrome(options=chrome_options)
     return driver
 
 # Create your views here.

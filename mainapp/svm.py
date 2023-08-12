@@ -1,6 +1,8 @@
 def svm_model(company):
     import pandas as pd
     from sklearn.svm import SVR
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
     import numpy as np
 
     # Read csv file
@@ -22,11 +24,38 @@ def svm_model(company):
     X = df[['Open', 'High', 'Low', 'Percent Change']]
     y = df['Close']
 
+    # Split the data into train and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
     # Create an SVR model
     svr = SVR()
 
     # Fit the model
-    svr.fit(X, y)
+    svr.fit(X_train, y_train)
+
+    # Make predictions on the test set
+    y_pred = svr.predict(X_test)
+
+
+    # Calculate RMSE, MAE, and R2 for training set
+    train_rmse = np.sqrt(mean_squared_error(y_train, svr.predict(X_train)))
+    train_mae = mean_absolute_error(y_train, svr.predict(X_train))
+    train_r2 = r2_score(y_train, svr.predict(X_train))
+
+    # Calculate RMSE, MAE, and R2 for test set
+    test_rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+    test_mae = mean_absolute_error(y_test, y_pred)
+    test_r2 = r2_score(y_test, y_pred)
+
+    # Print evaluation metrics for training set
+    print("Training RMSE:", train_rmse)
+    print("Training MAE:", train_mae)
+    print("Training R2:", train_r2)
+
+    # Print evaluation metrics for test set
+    print("Test RMSE:", test_rmse)
+    print("Test MAE:", test_mae)
+    print("Test R2:", test_r2)
 
     # Forecast close prices for the upcoming week
     last_day = df['Date'].max()
@@ -46,4 +75,10 @@ def svm_model(company):
 
     # Print the dataframe
     print(df_predictions)
-    return df_predictions
+
+
+    # import joblib
+    # joblib.dump(svr, company.name.replace('.csv', 'svm.pkl'))
+
+
+    return df_predictions,train_rmse, test_rmse, train_r2, test_r2

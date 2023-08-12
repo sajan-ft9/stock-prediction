@@ -43,13 +43,17 @@
                     $('#result-table tbody').empty();
                     $('#result').empty();
                     console.log(response.data)
-                    console.log(response.data.mse)
-                    console.log(response.data.rmse)
-                    console.log(response.data.r2)
-                    $.each(response.data.date, function (index, value) {
+
+                    $('#result').append($('<span>').text('Train RMSE: ' + response.data.train_rmse));
+                    $('#result').append($('<span>').text(' Test RMSE: ' + response.data.test_rmse));
+                    $('#result').append($('<span>').text(' Train R2: ' + response.data.train_r2));
+                    $('#result').append($('<span>').text(' Test R2: ' + response.data.test_r2));
+
+
+                    $.each(response.data.prediction.date, function (index, value) {
                         var newRow = $('<tr>');
                         newRow.append($('<td>').text(value));
-                        newRow.append($('<td>').text('Rs.' + response.data.close_price[index]));
+                        newRow.append($('<td>').text('Rs.' + response.data.prediction.close_price[index]));
                         $('#result-table tbody').append(newRow);
                     });
                 },
@@ -76,6 +80,8 @@
         <div class="section-title" data-aos="fade-up">
             <h2>Result</h2>
         </div>
+
+
         <form id="predict-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group mb-3">
